@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="時間トラッカー" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>時間トラッカー</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background: #f2f2f7;
+      color: #1c1c1e;
+      min-height: 100dvh;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .top-bar {
+      background: #fff;
+      padding: 16px 20px 12px;
+      padding-top: calc(16px + env(safe-area-inset-top));
+      border-bottom: 0.5px solid #d1d1d6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .top-bar h1 { font-size: 20px; font-weight: 600; }
+    .date-label { font-size: 13px; color: #8e8e93; }
+
+    .section { padding: 16px 16px 0; }
+    .section-title { font-size: 13px; font-weight: 500; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+
+    /* Category cards */
+    .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cat-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.15s, transform 0.1s;
+      user-select: none;
+    }
+    .cat-card:active { transform: scale(0.97); }
+    .cat-card.active { border-color: var(--cat-color); }
+    .cat-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cat-color); margin-bottom: 8px; }
+    .cat-name { font-size: 14px; font-weight: 500; color: #1c1c1e; display: flex; align-items: center; gap: 5px; }
+    .cat-time { font-size: 24px; font-weight: 600; color: #1c1c1e; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .pulse { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #34c759; animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+    .add-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #8e8e93;
+      font-size: 14px;
+      border: 1.5px dashed #d1d1d6;
+    }
+    .add-card:active { transform: scale(0.97); }
+
+    /* Timer panel */
+    .timer-panel {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 16px;
+    }
+    .timer-sublabel { font-size: 13px; color: #8e8e93; margin-bottom: 4px; min-height: 18px; }
+    .timer-display { font-size: 52px; font-weight: 300; color: #1c1c1e; font-variant-numeric: tabular-nums; letter-spacing: -2px; margin-bottom: 16px; }
+    .timer-btns { display: flex; gap: 10px; }
+    .btn-start {
+      flex: 1;
+      background: #34c759;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-start.stopping { background: #ff3b30; }
+    .btn-start:active { opacity: 0.8; }
+    .btn-pause {
+      background: #f2f2f7;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #1c1c1e;
+      display: none;
+    }
+    .btn-pause:active { opacity: 0.7; }
+    .btn-reset {
+      background: #f2f2f7;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .btn-reset:active { opacity: 0.7; }
+
+    /* Chart */
+    .chart-panel { background: #fff; border-radius: 16px; padding: 16px 20px; margin: 0 16px 16px; }
+    .chart-panel-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .bar-name { font-size: 13px; color: #3c3c43; width: 62px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { flex: 1; background: #f2f2f7; border-radius: 5px; height: 18px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 5px; transition: width 0.4s ease; }
+    .bar-val { font-size: 12px; color: #8e8e93; width: 42px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .total-row { display: flex; justify-content: space-between; padding-top: 10px; border-top: 0.5px solid #d1d1d6; margin-top: 4px; }
+    .total-lbl { font-size: 13px; color: #8e8e93; }
+    .total-val { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      display: none; align-items: flex-end; justify-content: center;
+      z-index: 100; padding-bottom: env(safe-area-inset-bottom);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+      width: 100%;
+      max-width: 480px;
+    }
+    .modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 14px; }
+    .modal input[type=text] {
+      width: 100%;
+      border: 0.5px solid #d1d1d6;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 14px;
+      background: #f9f9f9;
+    }
+    .modal input[type=text]:focus { border-color: #007aff; background: #fff; }
+    .color-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .color-chip {
+      width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+      border: 3px solid transparent; transition: border-color 0.1s;
+    }
+    .color-chip.selected { border-color: #1c1c1e; }
+    .modal-btns { display: flex; gap: 10px; }
+    .btn-cancel { flex: 1; background: #f2f2f7; border: none; border-radius: 12px; padding: 14px; font-size: 16px; cursor: pointer; }
+    .btn-add { flex: 2; background: #007aff; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    .btn-add:active, .btn-cancel:active { opacity: 0.8; }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #1c1c1e; color: #fff; }
+      .top-bar { background: #2c2c2e; border-color: #3a3a3c; }
+      .top-bar h1 { color: #fff; }
+      .cat-card, .timer-panel, .chart-panel { background: #2c2c2e; }
+      .add-card { background: #2c2c2e; border-color: #3a3a3c; }
+      .cat-name, .cat-time, .timer-display { color: #fff; }
+      .btn-pause, .btn-reset { background: #3a3a3c; color: #fff; }
+      .bar-track { background: #3a3a3c; }
+      .total-row { border-color: #3a3a3c; }
+      .modal { background: #2c2c2e; }
+      .modal h3, .modal input[type=text] { color: #fff; }
+      .modal input[type=text] { background: #3a3a3c; border-color: #48484a; }
+      .btn-cancel { background: #3a3a3c; color: #fff; }
+      .color-chip.selected { border-color: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>今日の時間</h1>
+  <span class="date-label" id="dateLabel"></span>
+</div>
+
+<div class="section" style="margin-top:16px">
+  <div class="section-title">カテゴリ</div>
+  <div class="cat-grid" id="catGrid"></div>
+</div>
+
+<div class="timer-panel">
+  <div class="timer-sublabel" id="timerLabel">カテゴリを選んでスタート</div>
+  <div class="timer-display" id="timerDisplay">00:00:00</div>
+  <div class="timer-btns">
+    <button class="btn-start" id="btnStart" onclick="toggleTimer()">▶ スタート</button>
+    <button class="btn-pause" id="btnPause" onclick="pauseTimer()">⏸</button>
+    <button class="btn-reset" onclick="resetCurrent()">↺</button>
+  </div>
+</div>
+
+<div class="chart-panel">
+  <div class="chart-panel-title">カテゴリ別 合計時間</div>
+  <div id="barChart"></div>
+  <div class="total-row">
+    <span class="total-lbl">合計</span>
+    <span class="total-val" id="totalVal">0:00:00</span>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <h3>カテゴリを追加</h3>
+    <input type="text" id="newCatName" placeholder="例: 英語、読書、筋トレ…" maxlength="10" />
+    <div class="color-row" id="colorRow"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="btn-add" onclick="saveCategory()">追加</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS = ['#007aff','#34c759','#ff9500','#ff3b30','#af52de','#5ac8fa','#ffcc00','#ff6b35','#30b0c7','#32ade6'];
+let categories = [
+  { id:1, name:'数学', color:'#007aff', elapsed:0 },
+  { id:2, name:'英語', color:'#34c759', elapsed:0 },
+  { id:3, name:'理科', color:'#ff9500', elapsed:0 },
+];
+let nextId = 4;
+let selected = null;
+let running = false;
+let startTs = null;
+let intervalId = null;
+let currentElapsed = 0;
+let selectedColor = COLORS[0];
+
+function fmt(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function fmtShort(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function selectCat(id) {
+  if (running) stopTimer();
+  selected = id;
+  currentElapsed = 0;
+  document.getElementById('timerDisplay').textContent = '00:00:00';
+  const cat = categories.find(c => c.id === id);
+  document.getElementById('timerLabel').textContent = cat.name + ' を計測';
+  document.getElementById('btnStart').textContent = '▶ スタート';
+  document.getElementById('btnStart').classList.remove('stopping');
+  document.getElementById('btnPause').style.display = 'none';
+  render();
+}
+
+function toggleTimer() {
+  if (!selected) { alert('カテゴリを選んでください'); return; }
+  if (!running) startTimer(); else stopTimer();
+}
+
+function startTimer() {
+  running = true;
+  startTs = Date.now() - currentElapsed * 1000;
+  const cat = categories.find(c => c.id === selected);
+  document.getElementById('timerLabel').innerHTML = `<span class="pulse"></span> ${cat.name} を計測中`;
+  document.getElementById('btnStart').textContent = '■ ストップ';
+  document.getElementById('btnStart').classList.add('stopping');
+  document.getElementById('btnPause').style.display = '';
+  intervalId = setInterval(() => {
+    currentElapsed = Math.floor((Date.now() - startTs) / 1000);
+    document.getElementById('timerDisplay').textContent = fmt(currentElapsed);
+    renderChart();
+  }, 1000);
+}
+
+function stopTimer() {
+  if (!running) return;
+  running = false;
+  clearInterval(intervalId);
+  const cat = categories.find(c => c.id === selected);
+  cat.elapsed += currentElapsed;
+  currentElapsed = 0;
+  document.getElementById('timerLabel').textContent = cat.name;
+  document.getElementById('btnStart').textContent = '▶ スタート';
+  document.getElementById('btnStart').classList.remove('stopping');
+  document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('timerDisplay').textContent = '00:00:00';
+  save();
+  render();
+}
+
+function pauseTimer() {
+  if (!running) return;
+  running = false;
+  clearInterval(intervalId);
+  const cat = categories.find(c => c.id === selected);
+  cat.elapsed += currentElapsed;
+  currentElapsed = 0;
+  document.getElementById('timerLabel').textContent = cat.name + ' — 一時停止中';
+  document.getElementById('btnStart').textContent = '▶ 再開';
+  document.getElementById('btnStart').classList.remove('stopping');
+  document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('timerDisplay').textContent = '00:00:00';
+  save();
+  render();
+}
+
+function resetCurrent() {
+  if (running) { clearInterval(intervalId); running = false; }
+  currentElapsed = 0;
+  document.getElementById('timerDisplay').textContent = '00:00:00';
+  document.getElementById('btnStart').textContent = '▶ スタート';
+  document.getElementById('btnStart').classList.remove('stopping');
+  document.getElementById('btnPause').style.display = 'none';
+}
+
+function render() { renderGrid(); renderChart(); }
+
+function renderGrid() {
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+  categories.forEach(cat => {
+    const isActive = cat.id === selected;
+    const isRunning = running && cat.id === selected;
+    const d = document.createElement('div');
+    d.className = 'cat-card' + (isActive ? ' active' : '');
+    d.style.setProperty('--cat-color', cat.color);
+    d.innerHTML = `
+      <div class="cat-dot"></div>
+      <div class="cat-name">${isRunning ? '<span class="pulse"></span>' : ''}${cat.name}</div>
+      <div class="cat-time">${fmtShort(cat.elapsed)}</div>
+    `;
+    d.onclick = () => selectCat(cat.id);
+    grid.appendChild(d);
+  });
+  const addBtn = document.createElement('div');
+  addBtn.className = 'add-card';
+  addBtn.innerHTML = `<span style="font-size:20px">＋</span> 追加`;
+  addBtn.onclick = openModal;
+  grid.appendChild(addBtn);
+}
+
+function renderChart() {
+  const chart = document.getElementById('barChart');
+  chart.innerHTML = '';
+  const total = categories.reduce((a,c) => a + c.elapsed, 0) + (running ? currentElapsed : 0);
+  const sorted = [...categories].sort((a,b) => b.elapsed - a.elapsed);
+  const maxSec = Math.max(1, ...sorted.map(c => c.elapsed + (running && c.id === selected ? currentElapsed : 0)));
+  sorted.forEach(cat => {
+    const e = cat.elapsed + (running && cat.id === selected ? currentElapsed : 0);
+    const pct = Math.round((e / maxSec) * 100);
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-name">${cat.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${cat.color}"></div></div>
+      <div class="bar-val">${fmtShort(e)}</div>
+    `;
+    chart.appendChild(row);
+  });
+  document.getElementById('totalVal').textContent = fmt(total);
+}
+
+function openModal() {
+  document.getElementById('newCatName').value = '';
+  selectedColor = COLORS[0];
+  const cr = document.getElementById('colorRow');
+  cr.innerHTML = COLORS.map(col => `<div class="color-chip ${col===selectedColor?'selected':''}" style="background:${col}" onclick="pickColor('${col}',this)"></div>`).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('newCatName').focus(), 100);
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function handleOverlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
+function pickColor(col, el) {
+  selectedColor = col;
+  document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function saveCategory() {
+  const name = document.getElementById('newCatName').value.trim();
+  if (!name) return;
+  categories.push({ id: nextId++, name, color: selectedColor, elapsed: 0 });
+  closeModal();
+  save();
+  render();
+}
+
+// LocalStorage for persistence
+function save() {
+  try { localStorage.setItem('tt_cats', JSON.stringify(categories)); } catch(e){}
+}
+function load() {
+  try {
+    const d = localStorage.getItem('tt_cats');
+    if (d) categories = JSON.parse(d);
+  } catch(e){}
+}
+
+const now = new Date();
+document.getElementById('dateLabel').textContent = now.toLocaleDateString('ja-JP', { month:'long', day:'numeric', weekday:'short' });
+load();
+render();
+</script>
+</body>
+</html>
