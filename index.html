@@ -8,120 +8,96 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="時間トラッカー" />
-  <meta name="theme-color" content="#f5eff0" />
+  <meta name="theme-color" content="#f5eff0" id="metaTheme" />
   <title>時間トラッカー</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #f5eff0;
-      --pink: #e8527a;
-      --card-bg: #ffffff;
-      --text: #2d1f25;
-      --text-sub: #a08090;
-      --radius: 28px;
-      --tab-h: 80px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100dvh;
-      max-width: 430px;
-      margin: 0 auto;
-      position: relative;
-      overflow-x: hidden;
-    }
-    .page { display: none; flex-direction: column; min-height: 100dvh; padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom)); }
-    .page.active { display: flex; }
-
-    .top-bar { padding: 16px 24px 12px; padding-top: calc(16px + env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; }
-    .top-title { font-size: 22px; font-weight: 800; }
-    .top-date { font-size: 13px; color: var(--text-sub); font-weight: 600; }
-
-    /* Donut */
-    .donut-wrap { display: flex; align-items: center; justify-content: center; padding: 24px 0 16px; position: relative; }
-    .donut-svg { width: 230px; height: 230px; overflow: visible; }
-    .donut-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .donut-hours { font-size: 50px; font-weight: 900; line-height: 1; }
-    .donut-hours span { font-size: 17px; font-weight: 700; color: var(--text-sub); }
-    .donut-sub { font-size: 12px; color: var(--text-sub); font-weight: 600; margin-top: 2px; }
-
-    /* Pills */
-    .cat-scroll { padding: 0 20px 12px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
-    .cat-scroll::-webkit-scrollbar { display: none; }
-    .cat-pill { display: flex; align-items: center; gap: 8px; background: var(--card-bg); border-radius: 50px; padding: 10px 16px; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: border-color 0.15s, transform 0.1s; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-    .cat-pill:active { transform: scale(0.96); }
-    .cat-pill.active { border-color: var(--pill-color); }
-    .pill-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--pill-color); flex-shrink: 0; }
-    .pill-name { font-size: 14px; font-weight: 700; }
-    .pill-time { font-size: 12px; font-weight: 600; color: var(--text-sub); }
-
-    /* Timer card */
-    .timer-card { margin: 0 20px 16px; background: var(--card-bg); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 4px 20px rgba(232,82,122,0.10); }
-    .timer-who { font-size: 13px; font-weight: 700; color: var(--text-sub); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; min-height: 20px; }
-    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pink); animation: pulse 1s ease-in-out infinite; display: none; flex-shrink: 0; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.8)} }
-    .timer-num { font-size: 46px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: -1px; margin-bottom: 16px; }
-    .timer-btns { display: flex; gap: 10px; }
-    .btn-main { flex: 1; background: var(--pink); color: #fff; border: none; border-radius: 50px; padding: 15px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; transition: background 0.15s, transform 0.1s; box-shadow: 0 4px 16px rgba(232,82,122,0.35); }
-    .btn-main:active { transform: scale(0.97); }
-    .btn-main.stopping { background: #e05050; box-shadow: 0 4px 16px rgba(224,80,80,0.35); }
-    .btn-sub { background: var(--bg); border: none; border-radius: 50px; padding: 15px 18px; font-size: 18px; cursor: pointer; display: none; transition: opacity 0.1s; }
-    .btn-sub:active { opacity: 0.7; }
-    .btn-reset { background: var(--bg); border: none; border-radius: 50px; padding: 15px 18px; font-size: 18px; cursor: pointer; }
-    .btn-reset:active { opacity: 0.7; }
-
-    /* Stats */
-    .stats-card { margin: 0 20px 20px; background: var(--card-bg); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
-    .stats-title { font-size: 15px; font-weight: 800; margin-bottom: 14px; }
-    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .bar-name { font-size: 13px; font-weight: 700; color: var(--text-sub); width: 60px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bar-track { flex: 1; background: var(--bg); border-radius: 50px; height: 16px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 50px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
-    .bar-val { font-size: 12px; font-weight: 700; color: var(--text-sub); width: 38px; text-align: right; flex-shrink: 0; }
-    .total-row { display: flex; justify-content: space-between; padding-top: 10px; border-top: 1.5px solid var(--bg); margin-top: 4px; }
-    .total-lbl { font-size: 13px; font-weight: 700; color: var(--text-sub); }
-    .total-val { font-size: 13px; font-weight: 800; }
-
-    /* Tab bar */
-    .tab-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--pink); height: calc(var(--tab-h) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); display: flex; align-items: center; justify-content: space-around; border-radius: 28px 28px 0 0; z-index: 50; }
-    .tab-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; padding: 10px 20px; color: rgba(255,255,255,0.65); font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 700; gap: 4px; transition: color 0.15s; }
-    .tab-btn.active { color: #fff; }
-    .tab-btn svg { width: 22px; height: 22px; }
-    .tab-add { background: #fff; border: none; border-radius: 50%; width: 56px; height: 56px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.15); margin-top: -20px; transition: transform 0.1s; }
-    .tab-add:active { transform: scale(0.93); }
-
-    /* Settings */
-    .cat-manage { display: flex; flex-direction: column; gap: 8px; padding: 0 20px 20px; }
-    .cat-row { background: var(--card-bg); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    .cat-row-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-    .cat-row-name { font-size: 15px; font-weight: 700; flex: 1; }
-    .cat-row-time { font-size: 13px; font-weight: 700; color: var(--text-sub); }
-    .btn-del { background: none; border: none; font-size: 18px; cursor: pointer; color: #e05050; padding: 0 4px; }
-
-    /* Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(45,31,37,0.35); display: none; align-items: flex-end; justify-content: center; z-index: 200; backdrop-filter: blur(4px); }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--card-bg); border-radius: 28px 28px 0 0; padding: 24px 24px calc(24px + env(safe-area-inset-bottom)); width: 100%; max-width: 430px; animation: slideUp 0.25s cubic-bezier(.4,0,.2,1); }
-    @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-    .modal-handle { width: 40px; height: 4px; background: #ead5db; border-radius: 4px; margin: 0 auto 20px; }
-    .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
-    .modal-input { width: 100%; border: 2px solid #ead5db; border-radius: 16px; padding: 14px 16px; font-size: 16px; font-weight: 700; font-family: 'Nunito', sans-serif; outline: none; margin-bottom: 16px; background: var(--bg); color: var(--text); }
-    .modal-input:focus { border-color: var(--pink); }
-    .color-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-    .color-chip { width: 34px; height: 34px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.12s, transform 0.1s; }
-    .color-chip:active { transform: scale(0.9); }
-    .color-chip.selected { border-color: var(--text); }
-    .modal-btns { display: flex; gap: 10px; }
-    .btn-cancel { flex: 1; background: var(--bg); border: none; border-radius: 50px; padding: 15px; font-size: 15px; font-weight: 700; font-family: 'Nunito', sans-serif; cursor: pointer; color: var(--text); }
-    .btn-save { flex: 2; background: var(--pink); color: #fff; border: none; border-radius: 50px; padding: 15px; font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif; cursor: pointer; box-shadow: 0 4px 14px rgba(232,82,122,0.35); }
-    .btn-save:active, .btn-cancel:active { opacity: 0.8; }
+    :root { --bg:#f5eff0;--pink:#e8527a;--card-bg:#fff;--text:#2d1f25;--text-sub:#a08090;--radius:28px;--tab-h:80px; }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;max-width:430px;margin:0 auto;overflow-x:hidden;}
+    .page{display:none;flex-direction:column;min-height:100dvh;padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));}
+    .page.active{display:flex;}
+    .top-bar{padding:16px 24px 12px;padding-top:calc(16px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;}
+    .top-title{font-size:22px;font-weight:800;}
+    .top-date{font-size:13px;color:var(--text-sub);font-weight:600;}
+    .donut-wrap{display:flex;align-items:center;justify-content:center;padding:24px 0 16px;position:relative;}
+    .donut-svg{width:230px;height:230px;overflow:visible;}
+    .donut-center{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .donut-hours{font-size:50px;font-weight:900;line-height:1;}
+    .donut-hours span{font-size:17px;font-weight:700;color:var(--text-sub);}
+    .donut-sub{font-size:12px;color:var(--text-sub);font-weight:600;margin-top:2px;}
+    .cat-scroll{padding:0 20px 12px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;}
+    .cat-scroll::-webkit-scrollbar{display:none;}
+    .cat-pill{display:flex;align-items:center;gap:8px;background:var(--card-bg);border-radius:50px;padding:10px 16px;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:border-color .15s,transform .1s;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+    .cat-pill:active{transform:scale(.96);}
+    .cat-pill.active{border-color:var(--pill-color);}
+    .pill-dot{width:10px;height:10px;border-radius:50%;background:var(--pill-color);flex-shrink:0;}
+    .pill-name{font-size:14px;font-weight:700;}
+    .pill-time{font-size:12px;font-weight:600;color:var(--text-sub);}
+    .timer-card{margin:0 20px 16px;background:var(--card-bg);border-radius:var(--radius);padding:20px 24px;box-shadow:0 4px 20px rgba(0,0,0,.07);}
+    .timer-who{font-size:13px;font-weight:700;color:var(--text-sub);margin-bottom:4px;display:flex;align-items:center;gap:6px;min-height:20px;}
+    .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--pink);animation:pulse 1s ease-in-out infinite;display:none;flex-shrink:0;}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
+    .timer-num{font-size:46px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-1px;margin-bottom:16px;}
+    .timer-btns{display:flex;gap:10px;}
+    .btn-main{flex:1;background:var(--pink);color:#fff;border:none;border-radius:50px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .3s,transform .1s;}
+    .btn-main:active{transform:scale(.97);}
+    .btn-main.stopping{background:#e05050;}
+    .btn-sub{background:var(--bg);border:none;border-radius:50px;padding:15px 18px;font-size:18px;cursor:pointer;display:none;}
+    .btn-sub:active,.btn-reset:active{opacity:.7;}
+    .btn-reset{background:var(--bg);border:none;border-radius:50px;padding:15px 18px;font-size:18px;cursor:pointer;}
+    .stats-card{margin:0 20px 20px;background:var(--card-bg);border-radius:var(--radius);padding:20px 24px;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+    .stats-title{font-size:15px;font-weight:800;margin-bottom:14px;}
+    .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .bar-name{font-size:13px;font-weight:700;color:var(--text-sub);width:60px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .bar-track{flex:1;background:var(--bg);border-radius:50px;height:16px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:50px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+    .bar-val{font-size:12px;font-weight:700;color:var(--text-sub);width:38px;text-align:right;flex-shrink:0;}
+    .total-row{display:flex;justify-content:space-between;padding-top:10px;border-top:1.5px solid var(--bg);margin-top:4px;}
+    .total-lbl{font-size:13px;font-weight:700;color:var(--text-sub);}
+    .total-val{font-size:13px;font-weight:800;}
+    .tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--pink);height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;align-items:center;justify-content:space-around;border-radius:28px 28px 0 0;z-index:50;transition:background .3s;}
+    .tab-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:10px 20px;color:rgba(255,255,255,.65);font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;gap:4px;transition:color .15s;}
+    .tab-btn.active{color:#fff;}
+    .tab-btn svg{width:22px;height:22px;}
+    .tab-add{background:#fff;border:none;border-radius:50%;width:56px;height:56px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.15);margin-top:-20px;transition:transform .1s;}
+    .tab-add:active{transform:scale(.93);}
+    .settings-block{margin:0 20px 16px;background:var(--card-bg);border-radius:20px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+    .settings-block-title{font-size:13px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
+    .theme-grid{display:flex;gap:10px;flex-wrap:wrap;}
+    .theme-chip{width:42px;height:42px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s,transform .12s;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:transparent;}
+    .theme-chip:active{transform:scale(.88);}
+    .theme-chip.selected{border-color:var(--text);color:#fff;}
+    .theme-name{font-size:11px;font-weight:700;color:var(--text-sub);text-align:center;margin-top:4px;}
+    .theme-item{display:flex;flex-direction:column;align-items:center;}
+    .cat-manage-list{display:flex;flex-direction:column;gap:8px;}
+    .cat-row{background:var(--bg);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;}
+    .cat-row-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0;}
+    .cat-row-name{font-size:15px;font-weight:700;flex:1;}
+    .cat-row-time{font-size:13px;font-weight:700;color:var(--text-sub);}
+    .btn-del{background:none;border:none;font-size:18px;cursor:pointer;color:#e05050;padding:0 4px;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(45,31,37,.35);display:none;align-items:flex-end;justify-content:center;z-index:200;backdrop-filter:blur(4px);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--card-bg);border-radius:28px 28px 0 0;padding:24px 24px calc(24px + env(safe-area-inset-bottom));width:100%;max-width:430px;animation:slideUp .25s cubic-bezier(.4,0,.2,1);}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .modal-handle{width:40px;height:4px;background:#e0d8da;border-radius:4px;margin:0 auto 20px;}
+    .modal h3{font-size:18px;font-weight:800;margin-bottom:16px;}
+    .modal-input{width:100%;border:2px solid #e0d8da;border-radius:16px;padding:14px 16px;font-size:16px;font-weight:700;font-family:'Nunito',sans-serif;outline:none;margin-bottom:16px;background:var(--bg);color:var(--text);}
+    .modal-input:focus{border-color:var(--pink);}
+    .color-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+    .color-chip{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .12s,transform .1s;}
+    .color-chip:active{transform:scale(.9);}
+    .color-chip.selected{border-color:var(--text);}
+    .modal-btns{display:flex;gap:10px;}
+    .btn-cancel{flex:1;background:var(--bg);border:none;border-radius:50px;padding:15px;font-size:15px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);}
+    .btn-save{flex:2;background:var(--pink);color:#fff;border:none;border-radius:50px;padding:15px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:background .3s;}
+    .btn-save:active,.btn-cancel:active{opacity:.8;}
+    .add-cat-btn{width:100%;background:var(--pink);color:#fff;border:none;border-radius:50px;padding:15px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:background .3s;}
+    .add-cat-btn:active{opacity:.85;}
   </style>
 </head>
 <body>
 
-<!-- HOME -->
 <div class="page active" id="pageHome">
   <div class="top-bar">
     <div class="top-title">今日の時間</div>
@@ -136,10 +112,7 @@
   </div>
   <div class="cat-scroll" id="catScroll"></div>
   <div class="timer-card">
-    <div class="timer-who">
-      <span class="pulse-dot" id="pulseDot"></span>
-      <span id="timerWhoText">カテゴリを選んでね</span>
-    </div>
+    <div class="timer-who"><span class="pulse-dot" id="pulseDot"></span><span id="timerWhoText">カテゴリを選んでね</span></div>
     <div class="timer-num" id="timerNum">00:00:00</div>
     <div class="timer-btns">
       <button class="btn-main" id="btnMain" onclick="toggleTimer()">START</button>
@@ -150,40 +123,37 @@
   <div class="stats-card">
     <div class="stats-title">カテゴリ別</div>
     <div id="barChart"></div>
-    <div class="total-row">
-      <span class="total-lbl">合計</span>
-      <span class="total-val" id="totalVal">0:00:00</span>
-    </div>
+    <div class="total-row"><span class="total-lbl">合計</span><span class="total-val" id="totalVal">0:00:00</span></div>
   </div>
 </div>
 
-<!-- SETTINGS -->
 <div class="page" id="pageSettings">
-  <div class="top-bar">
-    <div class="top-title">カテゴリ管理</div>
+  <div class="top-bar"><div class="top-title">設定</div></div>
+  <div class="settings-block">
+    <div class="settings-block-title">テーマカラー</div>
+    <div class="theme-grid" id="themeGrid"></div>
   </div>
-  <div class="cat-manage" id="catManage"></div>
-  <div style="padding:0 20px">
-    <button class="btn-save" style="width:100%;border-radius:50px;padding:15px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif" onclick="openModal()">＋ カテゴリを追加</button>
+  <div class="settings-block">
+    <div class="settings-block-title">カテゴリ</div>
+    <div class="cat-manage-list" id="catManage"></div>
+  </div>
+  <div style="padding:0 20px 20px">
+    <button class="add-cat-btn" onclick="openModal()">＋ カテゴリを追加</button>
   </div>
 </div>
 
-<!-- TAB BAR -->
 <nav class="tab-bar">
   <button class="tab-btn active" id="tabHome" onclick="switchPage('home')">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    ホーム
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>ホーム
   </button>
   <button class="tab-add" onclick="openModal()" aria-label="追加">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#e8527a" stroke-width="2.5" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" width="28" height="28" id="tabAddIcon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
   </button>
   <button class="tab-btn" id="tabSettings" onclick="switchPage('settings')">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7zm7.43-2.47c.04-.32.07-.65.07-.98s-.03-.67-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0014 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.33-.07.67-.07 1s.03.65.07.98l-2.11 1.66c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z"/></svg>
-    設定
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7zm7.43-2.47c.04-.32.07-.65.07-.98s-.03-.67-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0014 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.33-.07.67-.07 1s.03.65.07.98l-2.11 1.66c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z"/></svg>設定
   </button>
 </nav>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -198,23 +168,47 @@
 </div>
 
 <script>
-const CAT_COLORS = ['#e8527a','#a3b8e0','#c5a8d4','#8abfaa','#f0b86a','#e88a72','#7fc8d4','#d4a0c0','#b5d68a','#f0a0b0'];
-let categories = [
+const CAT_COLORS=['#e8527a','#a3b8e0','#c5a8d4','#8abfaa','#f0b86a','#e88a72','#7fc8d4','#d4a0c0','#b5d68a','#f0a0b0'];
+const THEMES=[
+  {name:'ピンク',   accent:'#e8527a',bg:'#f5eff0',sub:'#a08090',track:'#ead5db'},
+  {name:'ブルー',   accent:'#3b82f6',bg:'#eff4fb',sub:'#7090b0',track:'#c5d8f5'},
+  {name:'グリーン', accent:'#22c55e',bg:'#eef8f2',sub:'#6a9a78',track:'#b8eacc'},
+  {name:'パープル', accent:'#a855f7',bg:'#f4eefb',sub:'#8a6aaa',track:'#dcc5f5'},
+  {name:'オレンジ', accent:'#f97316',bg:'#fdf2ec',sub:'#a07050',track:'#fad5b8'},
+  {name:'ティール', accent:'#14b8a6',bg:'#eef8f7',sub:'#5a9a90',track:'#b2e8e3'},
+  {name:'レッド',   accent:'#ef4444',bg:'#fdf0f0',sub:'#a06060',track:'#f8c8c8'},
+  {name:'ゴールド', accent:'#d97706',bg:'#fdf8ec',sub:'#a08040',track:'#f5e4b0'},
+  {name:'スレート', accent:'#64748b',bg:'#f1f3f5',sub:'#7a8898',track:'#c8d0da'},
+  {name:'ローズ',   accent:'#f43f8e',bg:'#fef0f6',sub:'#a06080',track:'#f9c8e2'},
+];
+
+let categories=[
   {id:1,name:'数学',color:'#e8527a',elapsed:0},
   {id:2,name:'英語',color:'#a3b8e0',elapsed:0},
   {id:3,name:'理科',color:'#c5a8d4',elapsed:0},
   {id:4,name:'社会',color:'#8abfaa',elapsed:0},
 ];
-let nextId=5, selected=null, running=false, startTs=null, intervalId=null, currentElapsed=0, selectedColor=CAT_COLORS[0];
+let nextId=5,selected=null,running=false,startTs=null,intervalId=null,currentElapsed=0,selectedColor=CAT_COLORS[0],currentTheme=0;
 
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
 function fmtShort(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return h>0?`${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`:`${m}:${String(sec).padStart(2,'0')}`;}
 function totalAll(){return categories.reduce((a,c)=>a+c.elapsed,0)+(running?currentElapsed:0);}
 function getCatElapsed(cat){return cat.elapsed+(running&&cat.id===selected?currentElapsed:0);}
 
+function applyTheme(idx){
+  currentTheme=idx;
+  const t=THEMES[idx];
+  document.documentElement.style.setProperty('--pink',t.accent);
+  document.documentElement.style.setProperty('--bg',t.bg);
+  document.documentElement.style.setProperty('--text-sub',t.sub);
+  document.getElementById('metaTheme').setAttribute('content',t.bg);
+  document.getElementById('tabAddIcon').setAttribute('stroke',t.accent);
+  saveTheme();
+}
+
 function selectCat(id){
   if(running)stopTimer();
-  selected=id; currentElapsed=0;
+  selected=id;currentElapsed=0;
   document.getElementById('timerNum').textContent='00:00:00';
   const cat=categories.find(c=>c.id===id);
   document.getElementById('timerWhoText').textContent=cat.name+' を計測';
@@ -226,7 +220,7 @@ function selectCat(id){
 }
 function toggleTimer(){if(!selected){alert('カテゴリを選んでください');return;}running?stopTimer():startTimer();}
 function startTimer(){
-  running=true; startTs=Date.now()-currentElapsed*1000;
+  running=true;startTs=Date.now()-currentElapsed*1000;
   const cat=categories.find(c=>c.id===selected);
   document.getElementById('timerWhoText').textContent=cat.name+' を計測中';
   document.getElementById('pulseDot').style.display='';
@@ -272,16 +266,14 @@ function resetCurrent(){
 }
 
 function render(){renderDonut();renderPills();renderBars();renderSettings();}
-
 function renderDonut(){
   const svg=document.getElementById('donutSvg');
   const cx=115,cy=115,r=95,stroke=22,circ=2*Math.PI*r;
-  const total=totalAll();
-  document.getElementById('donutHours').innerHTML=`${(total/3600).toFixed(1)}<span>h</span>`;
+  document.getElementById('donutHours').innerHTML=`${(totalAll()/3600).toFixed(1)}<span>h</span>`;
   svg.innerHTML='';
   const bg=document.createElementNS('http://www.w3.org/2000/svg','circle');
   bg.setAttribute('cx',cx);bg.setAttribute('cy',cy);bg.setAttribute('r',r);
-  bg.setAttribute('fill','none');bg.setAttribute('stroke','#ead5db');bg.setAttribute('stroke-width',stroke);
+  bg.setAttribute('fill','none');bg.setAttribute('stroke',THEMES[currentTheme].track);bg.setAttribute('stroke-width',stroke);
   svg.appendChild(bg);
   const segs=categories.map(c=>({...c,val:getCatElapsed(c)})).filter(c=>c.val>0);
   if(!segs.length)return;
@@ -293,25 +285,21 @@ function renderDonut(){
     el.setAttribute('cx',cx);el.setAttribute('cy',cy);el.setAttribute('r',r);
     el.setAttribute('fill','none');el.setAttribute('stroke',seg.color);el.setAttribute('stroke-width',stroke);
     el.setAttribute('stroke-dasharray',`${dash} ${gap}`);el.setAttribute('stroke-dashoffset',offset);
-    el.setAttribute('stroke-linecap','round');el.style.transition='stroke-dasharray 0.5s ease';
+    el.setAttribute('stroke-linecap','round');
     svg.appendChild(el);offset-=dash;
   });
 }
-
 function renderPills(){
-  const scroll=document.getElementById('catScroll');
-  scroll.innerHTML='';
+  const scroll=document.getElementById('catScroll');scroll.innerHTML='';
   categories.forEach(cat=>{
-    const isActive=cat.id===selected;
     const d=document.createElement('div');
-    d.className='cat-pill'+(isActive?' active':'');
+    d.className='cat-pill'+(cat.id===selected?' active':'');
     d.style.setProperty('--pill-color',cat.color);
     d.innerHTML=`<div class="pill-dot"></div><span class="pill-name">${cat.name}</span><span class="pill-time">${fmtShort(getCatElapsed(cat))}</span>`;
     d.onclick=()=>selectCat(cat.id);
     scroll.appendChild(d);
   });
 }
-
 function renderBars(){
   const chart=document.getElementById('barChart');chart.innerHTML='';
   const sorted=[...categories].sort((a,b)=>getCatElapsed(b)-getCatElapsed(a));
@@ -324,8 +312,17 @@ function renderBars(){
   });
   document.getElementById('totalVal').textContent=fmt(totalAll());
 }
-
 function renderSettings(){
+  const tg=document.getElementById('themeGrid');tg.innerHTML='';
+  THEMES.forEach((t,i)=>{
+    const wrap=document.createElement('div');wrap.className='theme-item';
+    const chip=document.createElement('div');
+    chip.className='theme-chip'+(i===currentTheme?' selected':'');
+    chip.style.background=t.accent;chip.title=t.name;chip.textContent=i===currentTheme?'✓':'';
+    chip.onclick=()=>{applyTheme(i);renderSettings();};
+    const label=document.createElement('div');label.className='theme-name';label.textContent=t.name;
+    wrap.appendChild(chip);wrap.appendChild(label);tg.appendChild(wrap);
+  });
   const el=document.getElementById('catManage');el.innerHTML='';
   categories.forEach(cat=>{
     const d=document.createElement('div');d.className='cat-row';
@@ -333,9 +330,7 @@ function renderSettings(){
     el.appendChild(d);
   });
 }
-
 function deleteCat(id){if(selected===id){if(running)stopTimer();selected=null;}categories=categories.filter(c=>c.id!==id);save();render();}
-
 function openModal(){
   document.getElementById('newCatName').value='';selectedColor=CAT_COLORS[0];
   const grid=document.getElementById('colorGrid');
@@ -352,7 +347,6 @@ function saveCategory(){
   categories.push({id:nextId++,name,color:selectedColor,elapsed:0});
   closeModal();save();render();
 }
-
 function switchPage(page){
   document.getElementById('pageHome').classList.toggle('active',page==='home');
   document.getElementById('pageSettings').classList.toggle('active',page==='settings');
@@ -360,13 +354,18 @@ function switchPage(page){
   document.getElementById('tabSettings').classList.toggle('active',page==='settings');
   if(page==='settings')renderSettings();
 }
-
 function save(){try{localStorage.setItem('tt2_cats',JSON.stringify(categories));localStorage.setItem('tt2_nid',nextId);}catch(e){}}
-function load(){try{const d=localStorage.getItem('tt2_cats');if(d)categories=JSON.parse(d);const n=localStorage.getItem('tt2_nid');if(n)nextId=parseInt(n);}catch(e){}}
-
+function saveTheme(){try{localStorage.setItem('tt2_theme',currentTheme);}catch(e){}}
+function load(){
+  try{
+    const d=localStorage.getItem('tt2_cats');if(d)categories=JSON.parse(d);
+    const n=localStorage.getItem('tt2_nid');if(n)nextId=parseInt(n);
+    const t=localStorage.getItem('tt2_theme');if(t!==null)currentTheme=parseInt(t);
+  }catch(e){}
+}
 const now=new Date();
 document.getElementById('dateLabel').textContent=now.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
-load();render();
+load();applyTheme(currentTheme);render();
 </script>
 </body>
 </html>
