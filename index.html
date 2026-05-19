@@ -1,5 +1,4 @@
-python3 << 'PYEOF'
-html = r"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -56,27 +55,51 @@ html = r"""<!DOCTYPE html>
     .total-row{display:flex;justify-content:space-between;padding-top:10px;border-top:1.5px solid var(--bg);margin-top:4px;}
     .total-lbl{font-size:13px;font-weight:700;color:var(--text-sub);}
     .total-val{font-size:13px;font-weight:800;}
+
+    /* History page */
+    .history-empty{text-align:center;padding:60px 20px;color:var(--text-sub);font-weight:700;font-size:15px;}
+    .history-day-card{margin:0 20px 14px;background:var(--card-bg);border-radius:22px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+    .history-day-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;cursor:pointer;user-select:none;}
+    .history-day-header:active{opacity:.8;}
+    .history-day-date{font-size:15px;font-weight:800;}
+    .history-day-total{font-size:13px;font-weight:700;color:var(--text-sub);}
+    .history-day-arrow{font-size:12px;color:var(--text-sub);transition:transform .2s;}
+    .history-day-arrow.open{transform:rotate(180deg);}
+    .history-mini-donut{display:flex;align-items:center;gap:12px;padding:0 18px 14px;}
+    .history-bars{padding:0 18px 14px;display:flex;flex-direction:column;gap:8px;}
+    .history-detail{display:none;}
+    .history-detail.open{display:block;}
+    .week-summary{margin:0 20px 14px;background:var(--card-bg);border-radius:22px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+    .week-summary-title{font-size:14px;font-weight:800;margin-bottom:12px;}
+    .week-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+    .week-day-label{font-size:12px;font-weight:700;color:var(--text-sub);width:28px;flex-shrink:0;}
+    .week-bar-track{flex:1;background:var(--bg);border-radius:50px;height:14px;overflow:hidden;}
+    .week-bar-fill{height:100%;border-radius:50px;background:var(--pink);transition:width .5s;}
+    .week-bar-val{font-size:11px;font-weight:700;color:var(--text-sub);width:38px;text-align:right;flex-shrink:0;}
+
+    /* Tab bar */
     .tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--pink);height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;align-items:center;justify-content:space-around;border-radius:28px 28px 0 0;z-index:50;transition:background .3s;}
-    .tab-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:10px 20px;color:rgba(255,255,255,.65);font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;gap:4px;transition:color .15s;}
+    .tab-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:8px 16px;color:rgba(255,255,255,.65);font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;gap:3px;transition:color .15s;}
     .tab-btn.active{color:#fff;}
-    .tab-btn svg{width:22px;height:22px;}
-    .tab-add{background:#fff;border:none;border-radius:50%;width:56px;height:56px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.15);margin-top:-20px;transition:transform .1s;}
+    .tab-btn svg{width:20px;height:20px;}
+    .tab-add{background:#fff;border:none;border-radius:50%;width:52px;height:52px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.15);margin-top:-18px;transition:transform .1s;}
     .tab-add:active{transform:scale(.93);}
+
+    /* Settings */
     .settings-block{margin:0 20px 16px;background:var(--card-bg);border-radius:20px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
     .settings-block-title{font-size:13px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
     .theme-grid{display:flex;gap:10px;flex-wrap:wrap;}
     .theme-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
-    .theme-chip{width:42px;height:42px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s,transform .12s;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:transparent;overflow:hidden;}
+    .theme-chip{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s,transform .12s;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:transparent;}
     .theme-chip:active{transform:scale(.88);}
     .theme-chip.selected{border-color:var(--text);color:#fff;}
     .theme-name{font-size:10px;font-weight:700;color:var(--text-sub);text-align:center;}
-    /* Pattern chips */
     .pattern-grid{display:flex;gap:10px;flex-wrap:wrap;}
     .pattern-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
-    .pattern-chip{width:52px;height:52px;border-radius:14px;cursor:pointer;border:3px solid transparent;transition:border-color .15s,transform .12s;overflow:hidden;position:relative;}
+    .pattern-chip{width:50px;height:50px;border-radius:14px;cursor:pointer;border:3px solid transparent;transition:border-color .15s,transform .12s;overflow:hidden;position:relative;}
     .pattern-chip:active{transform:scale(.88);}
     .pattern-chip.selected{border-color:var(--pink);}
-    .pattern-chip::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:transparent;text-shadow:0 1px 3px rgba(0,0,0,.3);}
+    .pattern-chip::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:transparent;}
     .pattern-chip.selected::after{color:var(--pink);}
     .pattern-name{font-size:10px;font-weight:700;color:var(--text-sub);text-align:center;}
     .cat-manage-list{display:flex;flex-direction:column;gap:8px;}
@@ -85,6 +108,8 @@ html = r"""<!DOCTYPE html>
     .cat-row-name{font-size:15px;font-weight:700;flex:1;}
     .cat-row-time{font-size:13px;font-weight:700;color:var(--text-sub);}
     .btn-del{background:none;border:none;font-size:18px;cursor:pointer;color:#e05050;padding:0 4px;}
+
+    /* Modal */
     .modal-overlay{position:fixed;inset:0;background:rgba(45,31,37,.35);display:none;align-items:flex-end;justify-content:center;z-index:200;backdrop-filter:blur(4px);}
     .modal-overlay.open{display:flex;}
     .modal{background:var(--card-bg);border-radius:28px 28px 0 0;padding:24px 24px calc(24px + env(safe-area-inset-bottom));width:100%;max-width:430px;animation:slideUp .25s cubic-bezier(.4,0,.2,1);}
@@ -107,6 +132,7 @@ html = r"""<!DOCTYPE html>
 </head>
 <body>
 
+<!-- HOME -->
 <div class="page active" id="pageHome">
   <div class="top-bar">
     <div class="top-title">今日の時間</div>
@@ -136,6 +162,14 @@ html = r"""<!DOCTYPE html>
   </div>
 </div>
 
+<!-- HISTORY -->
+<div class="page" id="pageHistory">
+  <div class="top-bar"><div class="top-title">履歴</div></div>
+  <div id="weekSummary"></div>
+  <div id="historyList"></div>
+</div>
+
+<!-- SETTINGS -->
 <div class="page" id="pageSettings">
   <div class="top-bar"><div class="top-title">設定</div></div>
   <div class="settings-block">
@@ -155,18 +189,23 @@ html = r"""<!DOCTYPE html>
   </div>
 </div>
 
+<!-- TAB BAR (4 tabs) -->
 <nav class="tab-bar">
   <button class="tab-btn active" id="tabHome" onclick="switchPage('home')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>ホーム
   </button>
+  <button class="tab-btn" id="tabHistory" onclick="switchPage('history')">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>履歴
+  </button>
   <button class="tab-add" onclick="openModal()" aria-label="追加">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" width="28" height="28" id="tabAddIcon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" width="26" height="26" id="tabAddIcon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
   </button>
   <button class="tab-btn" id="tabSettings" onclick="switchPage('settings')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7zm7.43-2.47c.04-.32.07-.65.07-.98s-.03-.67-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0014 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.33-.07.67-.07 1s.03.65.07.98l-2.11 1.66c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z"/></svg>設定
   </button>
 </nav>
 
+<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -182,46 +221,34 @@ html = r"""<!DOCTYPE html>
 
 <script>
 const CAT_COLORS=['#e8527a','#a3b8e0','#c5a8d4','#8abfaa','#f0b86a','#e88a72','#7fc8d4','#d4a0c0','#b5d68a','#f0a0b0'];
-
 const THEMES=[
-  {name:'ピンク',   accent:'#e8527a',bg:'#f5eff0',sub:'#a08090',track:'#ead5db'},
-  {name:'ブルー',   accent:'#3b82f6',bg:'#eff4fb',sub:'#7090b0',track:'#c5d8f5'},
-  {name:'グリーン', accent:'#22c55e',bg:'#eef8f2',sub:'#6a9a78',track:'#b8eacc'},
-  {name:'パープル', accent:'#a855f7',bg:'#f4eefb',sub:'#8a6aaa',track:'#dcc5f5'},
-  {name:'オレンジ', accent:'#f97316',bg:'#fdf2ec',sub:'#a07050',track:'#fad5b8'},
-  {name:'ティール', accent:'#14b8a6',bg:'#eef8f7',sub:'#5a9a90',track:'#b2e8e3'},
-  {name:'レッド',   accent:'#ef4444',bg:'#fdf0f0',sub:'#a06060',track:'#f8c8c8'},
-  {name:'ゴールド', accent:'#d97706',bg:'#fdf8ec',sub:'#a08040',track:'#f5e4b0'},
-  {name:'スレート', accent:'#64748b',bg:'#f1f3f5',sub:'#7a8898',track:'#c8d0da'},
-  {name:'ローズ',   accent:'#f43f8e',bg:'#fef0f6',sub:'#a06080',track:'#f9c8e2'},
+  {name:'ピンク',accent:'#e8527a',bg:'#f5eff0',sub:'#a08090',track:'#ead5db'},
+  {name:'ブルー',accent:'#3b82f6',bg:'#eff4fb',sub:'#7090b0',track:'#c5d8f5'},
+  {name:'グリーン',accent:'#22c55e',bg:'#eef8f2',sub:'#6a9a78',track:'#b8eacc'},
+  {name:'パープル',accent:'#a855f7',bg:'#f4eefb',sub:'#8a6aaa',track:'#dcc5f5'},
+  {name:'オレンジ',accent:'#f97316',bg:'#fdf2ec',sub:'#a07050',track:'#fad5b8'},
+  {name:'ティール',accent:'#14b8a6',bg:'#eef8f7',sub:'#5a9a90',track:'#b2e8e3'},
+  {name:'レッド',accent:'#ef4444',bg:'#fdf0f0',sub:'#a06060',track:'#f8c8c8'},
+  {name:'ゴールド',accent:'#d97706',bg:'#fdf8ec',sub:'#a08040',track:'#f5e4b0'},
+  {name:'スレート',accent:'#64748b',bg:'#f1f3f5',sub:'#7a8898',track:'#c8d0da'},
+  {name:'ローズ',accent:'#f43f8e',bg:'#fef0f6',sub:'#a06080',track:'#f9c8e2'},
+];
+const PATTERNS=[
+  {name:'なし',opacity:0,img:'none',size:'40px 40px'},
+  {name:'ドット',opacity:0.55,size:'24px 24px',img:'radial-gradient(circle, currentColor 1.5px, transparent 1.5px)'},
+  {name:'大ドット',opacity:0.35,size:'36px 36px',img:'radial-gradient(circle, currentColor 3px, transparent 3px)'},
+  {name:'星',opacity:0.45,size:'32px 32px',img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-size='16' fill='%23000'%3E%E2%98%85%3C/text%3E%3C/svg%3E")`},
+  {name:'ハート',opacity:0.45,size:'32px 32px',img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-size='16' fill='%23000'%3E%E2%99%A5%3C/text%3E%3C/svg%3E")`},
+  {name:'チェック',opacity:0.4,size:'28px 28px',img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect x='6' y='6' width='16' height='16' rx='3' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
+  {name:'ストライプ',opacity:0.25,size:'20px 20px',img:'repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 0, transparent 50%)'},
+  {name:'グリッド',opacity:0.2,size:'24px 24px',img:"linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)"},
+  {name:'波',opacity:0.3,size:'40px 20px',img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cpath d='M0 10 Q10 0 20 10 Q30 20 40 10' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
+  {name:'花',opacity:0.4,size:'36px 36px',img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Ctext x='6' y='26' font-size='20' fill='%23000'%3E%E2%9C%BF%3C/text%3E%3C/svg%3E")`},
+  {name:'三角',opacity:0.35,size:'30px 30px',img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Cpolygon points='15,4 28,26 2,26' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
+  {name:'ダイヤ',opacity:0.35,size:'28px 28px',img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect x='5' y='5' width='18' height='18' rx='1' fill='none' stroke='%23000' stroke-width='1.5' transform='rotate(45 14 14)'/%3E%3C/svg%3E")`},
 ];
 
-// Each pattern: { name, label(emoji preview), opacity, img(CSS background-image), size }
-const PATTERNS=[
-  {name:'なし',     label:'—',   opacity:0,    img:'none',    size:'40px 40px'},
-  {name:'ドット',   label:'⚬⚬',  opacity:0.55, size:'24px 24px',
-   img:`radial-gradient(circle, currentColor 1.5px, transparent 1.5px)`},
-  {name:'大ドット', label:'●●',  opacity:0.35, size:'36px 36px',
-   img:`radial-gradient(circle, currentColor 3px, transparent 3px)`},
-  {name:'星',       label:'★',   opacity:0.45, size:'32px 32px',
-   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-size='16' fill='%23000'%3E%E2%98%85%3C/text%3E%3C/svg%3E")`},
-  {name:'ハート',   label:'♥',   opacity:0.45, size:'32px 32px',
-   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-size='16' fill='%23000'%3E%E2%99%A5%3C/text%3E%3C/svg%3E")`},
-  {name:'チェック', label:'☑',   opacity:0.4,  size:'28px 28px',
-   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect x='6' y='6' width='16' height='16' rx='3' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
-  {name:'ストライプ',label:'≡',  opacity:0.25, size:'20px 20px',
-   img:`repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 0, transparent 50%)`},
-  {name:'グリッド', label:'#',   opacity:0.2,  size:'24px 24px',
-   img:`linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)`},
-  {name:'波',       label:'〜',  opacity:0.3,  size:'40px 20px',
-   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cpath d='M0 10 Q10 0 20 10 Q30 20 40 10' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
-  {name:'花',       label:'✿',  opacity:0.4,  size:'36px 36px',
-   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Ctext x='6' y='26' font-size='20' fill='%23000'%3E%E2%9C%BF%3C/text%3E%3C/svg%3E")`},
-  {name:'三角',     label:'▲',  opacity:0.35, size:'30px 30px',
-   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Cpolygon points='15,4 28,26 2,26' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
-  {name:'ダイヤ',   label:'◇',  opacity:0.35, size:'28px 28px',
-   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect x='5' y='5' width='18' height='18' rx='1' fill='none' stroke='%23000' stroke-width='1.5' transform='rotate(45 14 14)'/%3E%3C/svg%3E")`},
-];
+const WEEKDAYS=['日','月','火','水','木','金','土'];
 
 let categories=[
   {id:1,name:'数学',color:'#e8527a',elapsed:0},
@@ -230,78 +257,55 @@ let categories=[
   {id:4,name:'社会',color:'#8abfaa',elapsed:0},
 ];
 let nextId=5,selected=null,running=false,startTs=null,intervalId=null,currentElapsed=0,selectedColor=CAT_COLORS[0];
-let currentTheme=0, currentPattern=0;
+let currentTheme=0,currentPattern=0;
+let history={};  // { 'YYYY-MM-DD': { cats: [{id,name,color,elapsed}], total } }
 
+function todayKey(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+function fmtH(s){return`${(s/3600).toFixed(1)}h`;}
 function fmtShort(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return h>0?`${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`:`${m}:${String(sec).padStart(2,'0')}`;}
 function totalAll(){return categories.reduce((a,c)=>a+c.elapsed,0)+(running?currentElapsed:0);}
 function getCatElapsed(cat){return cat.elapsed+(running&&cat.id===selected?currentElapsed:0);}
 
+function saveToHistory(){
+  const key=todayKey();
+  const total=categories.reduce((a,c)=>a+c.elapsed,0);
+  if(total===0)return;
+  history[key]={cats:categories.map(c=>({id:c.id,name:c.name,color:c.color,elapsed:c.elapsed})),total};
+  try{localStorage.setItem('tt2_history',JSON.stringify(history));}catch(e){}
+}
+
 function applyTheme(idx){
-  currentTheme=idx;
-  const t=THEMES[idx];
-  const r=document.documentElement;
-  r.style.setProperty('--pink',t.accent);
-  r.style.setProperty('--bg',t.bg);
-  r.style.setProperty('--text-sub',t.sub);
+  currentTheme=idx;const t=THEMES[idx];const r=document.documentElement;
+  r.style.setProperty('--pink',t.accent);r.style.setProperty('--bg',t.bg);r.style.setProperty('--text-sub',t.sub);
   document.getElementById('metaTheme').setAttribute('content',t.bg);
   document.getElementById('tabAddIcon').setAttribute('stroke',t.accent);
   savePrefs();
+  renderDonut();
 }
-
 function applyPattern(idx){
-  currentPattern=idx;
-  const p=PATTERNS[idx];
-  const r=document.documentElement;
-  r.style.setProperty('--pattern-opacity', p.opacity);
-  r.style.setProperty('--pattern-img', p.img);
-  r.style.setProperty('--pattern-size', p.size);
-  // Use accent color for SVG-less patterns (dot/stripe/grid)
-  const accent=THEMES[currentTheme].accent+'40';
-  r.style.setProperty('color', accent); // used by currentColor in CSS patterns
+  currentPattern=idx;const p=PATTERNS[idx];const r=document.documentElement;
+  r.style.setProperty('--pattern-opacity',p.opacity);r.style.setProperty('--pattern-img',p.img);r.style.setProperty('--pattern-size',p.size);
   savePrefs();
 }
 
-// Build a small preview canvas for the pattern chip
-function buildPatternPreview(p, accentColor){
-  const c=document.createElement('canvas');c.width=52;c.height=52;
+function buildPatternPreview(p,accentColor){
+  const c=document.createElement('canvas');c.width=50;c.height=50;
   const ctx=c.getContext('2d');
-  const bg=THEMES[currentTheme].bg;
-  ctx.fillStyle=bg;ctx.fillRect(0,0,52,52);
-  ctx.fillStyle=accentColor+'70';
-  ctx.strokeStyle=accentColor+'70';ctx.lineWidth=1.5;
-  if(p.name==='なし'){
-    ctx.font='22px serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=THEMES[currentTheme].sub;ctx.fillText('—',26,28);
-  } else if(p.name==='ドット'){
-    for(let x=8;x<52;x+=16)for(let y=8;y<52;y+=16){ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fill();}
-  } else if(p.name==='大ドット'){
-    for(let x=12;x<52;x+=24)for(let y=12;y<52;y+=24){ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();}
-  } else if(p.name==='星'){
-    ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('★',26,28);
-    ctx.font='11px serif';ctx.fillText('★',10,14);ctx.fillText('★',42,42);
-  } else if(p.name==='ハート'){
-    ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('♥',26,28);
-    ctx.font='11px serif';ctx.fillText('♥',10,14);ctx.fillText('♥',42,42);
-  } else if(p.name==='チェック'){
-    for(let x=4;x<52;x+=18)for(let y=4;y<52;y+=18){ctx.strokeRect(x,y,12,12);}
-  } else if(p.name==='ストライプ'){
-    for(let i=-52;i<104;i+=10){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+52,52);ctx.stroke();}
-  } else if(p.name==='グリッド'){
-    for(let x=0;x<52;x+=12){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,52);ctx.stroke();}
-    for(let y=0;y<52;y+=12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(52,y);ctx.stroke();}
-  } else if(p.name==='波'){
-    for(let row=8;row<52;row+=16){ctx.beginPath();for(let x=0;x<=52;x+=2){ctx.lineTo(x,row+Math.sin(x/6)*4);}ctx.stroke();}
-  } else if(p.name==='花'){
-    ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('✿',26,28);
-    ctx.font='12px serif';ctx.fillText('✿',9,12);ctx.fillText('✿',43,44);
-  } else if(p.name==='三角'){
-    const tri=(x,y,s)=>{ctx.beginPath();ctx.moveTo(x,y-s);ctx.lineTo(x+s*.87,y+s*.5);ctx.lineTo(x-s*.87,y+s*.5);ctx.closePath();ctx.stroke();};
-    tri(26,22,13);tri(10,44,7);tri(44,44,7);
-  } else if(p.name==='ダイヤ'){
-    const dia=(x,y,s)=>{ctx.beginPath();ctx.moveTo(x,y-s);ctx.lineTo(x+s,y);ctx.lineTo(x,y+s);ctx.lineTo(x-s,y);ctx.closePath();ctx.stroke();};
-    dia(26,24,11);dia(8,44,6);dia(44,44,6);
-  }
+  ctx.fillStyle=THEMES[currentTheme].bg;ctx.fillRect(0,0,50,50);
+  ctx.fillStyle=accentColor+'70';ctx.strokeStyle=accentColor+'70';ctx.lineWidth=1.5;
+  if(p.name==='なし'){ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=THEMES[currentTheme].sub;ctx.fillText('—',25,27);}
+  else if(p.name==='ドット'){for(let x=8;x<50;x+=16)for(let y=8;y<50;y+=16){ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fill();}}
+  else if(p.name==='大ドット'){for(let x=13;x<50;x+=24)for(let y=13;y<50;y+=24){ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();}}
+  else if(p.name==='星'){ctx.font='17px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('★',25,27);ctx.font='10px serif';ctx.fillText('★',10,13);ctx.fillText('★',40,42);}
+  else if(p.name==='ハート'){ctx.font='17px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('♥',25,27);ctx.font='10px serif';ctx.fillText('♥',10,13);ctx.fillText('♥',40,42);}
+  else if(p.name==='チェック'){for(let x=4;x<50;x+=18)for(let y=4;y<50;y+=18)ctx.strokeRect(x,y,12,12);}
+  else if(p.name==='ストライプ'){for(let i=-50;i<100;i+=10){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+50,50);ctx.stroke();}}
+  else if(p.name==='グリッド'){for(let x=0;x<50;x+=12){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,50);ctx.stroke();}for(let y=0;y<50;y+=12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(50,y);ctx.stroke();}}
+  else if(p.name==='波'){for(let row=8;row<50;row+=16){ctx.beginPath();for(let x=0;x<=50;x+=2)ctx.lineTo(x,row+Math.sin(x/6)*4);ctx.stroke();}}
+  else if(p.name==='花'){ctx.font='19px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('✿',25,27);ctx.font='11px serif';ctx.fillText('✿',9,12);ctx.fillText('✿',42,43);}
+  else if(p.name==='三角'){const tri=(x,y,s)=>{ctx.beginPath();ctx.moveTo(x,y-s);ctx.lineTo(x+s*.87,y+s*.5);ctx.lineTo(x-s*.87,y+s*.5);ctx.closePath();ctx.stroke();};tri(25,21,12);tri(9,43,6);tri(42,43,6);}
+  else if(p.name==='ダイヤ'){const dia=(x,y,s)=>{ctx.beginPath();ctx.moveTo(x,y-s);ctx.lineTo(x+s,y);ctx.lineTo(x,y+s);ctx.lineTo(x-s,y);ctx.closePath();ctx.stroke();};dia(25,23,10);dia(8,43,6);dia(42,43,6);}
   return c.toDataURL();
 }
 
@@ -339,7 +343,7 @@ function stopTimer(){
   document.getElementById('btnMain').classList.remove('stopping');
   document.getElementById('btnPause').style.display='none';
   document.getElementById('timerNum').textContent='00:00:00';
-  save();render();
+  save();saveToHistory();render();
 }
 function pauseTimer(){
   if(!running)return;
@@ -352,7 +356,7 @@ function pauseTimer(){
   document.getElementById('btnMain').classList.remove('stopping');
   document.getElementById('btnPause').style.display='none';
   document.getElementById('timerNum').textContent='00:00:00';
-  save();render();
+  save();saveToHistory();render();
 }
 function resetCurrent(){
   if(running){clearInterval(intervalId);running=false;}
@@ -388,6 +392,25 @@ function renderDonut(){
     svg.appendChild(el);offset-=dash;
   });
 }
+function renderMiniDonut(svgEl,cats,size){
+  const cx=size/2,cy=size/2,r=size/2-6,stroke=8,circ=2*Math.PI*r;
+  svgEl.innerHTML='';svgEl.setAttribute('viewBox',`0 0 ${size} ${size}`);
+  const bg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  bg.setAttribute('cx',cx);bg.setAttribute('cy',cy);bg.setAttribute('r',r);
+  bg.setAttribute('fill','none');bg.setAttribute('stroke',THEMES[currentTheme].track);bg.setAttribute('stroke-width',stroke);
+  svgEl.appendChild(bg);
+  const total=cats.reduce((a,c)=>a+c.elapsed,0);if(!total)return;
+  let offset=circ*0.25;
+  cats.filter(c=>c.elapsed>0).forEach(cat=>{
+    const dash=(cat.elapsed/total)*circ,gap=circ-dash;
+    const el=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    el.setAttribute('cx',cx);el.setAttribute('cy',cy);el.setAttribute('r',r);
+    el.setAttribute('fill','none');el.setAttribute('stroke',cat.color);el.setAttribute('stroke-width',stroke);
+    el.setAttribute('stroke-dasharray',`${dash} ${gap}`);el.setAttribute('stroke-dashoffset',offset);
+    el.setAttribute('stroke-linecap','round');
+    svgEl.appendChild(el);offset-=dash;
+  });
+}
 function renderPills(){
   const scroll=document.getElementById('catScroll');scroll.innerHTML='';
   categories.forEach(cat=>{
@@ -411,35 +434,94 @@ function renderBars(){
   });
   document.getElementById('totalVal').textContent=fmt(totalAll());
 }
+
+function renderHistory(){
+  // Week summary (last 7 days)
+  const weekEl=document.getElementById('weekSummary');
+  const histEl=document.getElementById('historyList');
+  const keys=Object.keys(history).sort().reverse();
+  if(keys.length===0){
+    weekEl.innerHTML='';
+    histEl.innerHTML='<div class="history-empty">📋 まだ記録がありません<br><br>タイマーを使うと<br>ここに履歴が残ります</div>';
+    return;
+  }
+  // Week bar chart
+  const today=new Date();
+  const weekDays=[];
+  for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;weekDays.push({key:k,label:WEEKDAYS[d.getDay()],d});}
+  const maxWeekSec=Math.max(1,...weekDays.map(w=>history[w.key]?history[w.key].total:0));
+  let weekHtml=`<div class="week-summary"><div class="week-summary-title">直近7日間</div>`;
+  weekDays.forEach(w=>{
+    const sec=history[w.key]?history[w.key].total:0;
+    const pct=Math.round((sec/maxWeekSec)*100);
+    const isToday=w.key===todayKey();
+    weekHtml+=`<div class="week-bar-row"><div class="week-day-label" style="${isToday?'color:var(--pink);font-weight:900':''}">${w.label}</div><div class="week-bar-track"><div class="week-bar-fill" style="width:${pct}%;${sec===0?'background:transparent':''}"></div></div><div class="week-bar-val">${sec>0?fmtH(sec):'—'}</div></div>`;
+  });
+  weekHtml+='</div>';
+  weekEl.innerHTML=weekHtml;
+  // Day cards
+  histEl.innerHTML='';
+  keys.forEach((key,idx)=>{
+    const entry=history[key];
+    const d=new Date(key+'T00:00:00');
+    const isToday=key===todayKey();
+    const label=isToday?`今日（${d.getMonth()+1}/${d.getDate()} ${WEEKDAYS[d.getDay()]}）`:`${d.getMonth()+1}/${d.getDate()}（${WEEKDAYS[d.getDay()]}）`;
+    const card=document.createElement('div');card.className='history-day-card';
+    const maxSec=Math.max(1,...entry.cats.map(c=>c.elapsed));
+    const barsHtml=entry.cats.filter(c=>c.elapsed>0).sort((a,b)=>b.elapsed-a.elapsed).map(c=>{
+      const pct=Math.round((c.elapsed/maxSec)*100);
+      return `<div class="bar-row"><div class="bar-name">${c.name}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c.color}"></div></div><div class="bar-val">${fmtShort(c.elapsed)}</div></div>`;
+    }).join('');
+    card.innerHTML=`
+      <div class="history-day-header" onclick="toggleDay(${idx})">
+        <div>
+          <div class="history-day-date">${label}</div>
+          <div class="history-day-total">合計 ${fmtH(entry.total)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg id="miniDonut${idx}" width="40" height="40" style="flex-shrink:0"></svg>
+          <span class="history-day-arrow" id="arrow${idx}">▼</span>
+        </div>
+      </div>
+      <div class="history-detail" id="detail${idx}">
+        <div class="history-bars">${barsHtml}</div>
+      </div>`;
+    histEl.appendChild(card);
+    const svg=card.querySelector(`#miniDonut${idx}`);
+    renderMiniDonut(svg,entry.cats,40);
+    if(idx===0){
+      document.getElementById(`detail${idx}`).classList.add('open');
+      document.getElementById(`arrow${idx}`).classList.add('open');
+    }
+  });
+}
+function toggleDay(idx){
+  const det=document.getElementById(`detail${idx}`);
+  const arr=document.getElementById(`arrow${idx}`);
+  det.classList.toggle('open');arr.classList.toggle('open');
+}
+
 function renderSettings(){
-  // Theme
   const tg=document.getElementById('themeGrid');tg.innerHTML='';
   THEMES.forEach((t,i)=>{
     const wrap=document.createElement('div');wrap.className='theme-item';
-    const chip=document.createElement('div');
-    chip.className='theme-chip'+(i===currentTheme?' selected':'');
+    const chip=document.createElement('div');chip.className='theme-chip'+(i===currentTheme?' selected':'');
     chip.style.background=t.accent;chip.title=t.name;chip.textContent=i===currentTheme?'✓':'';
     chip.onclick=()=>{applyTheme(i);renderSettings();};
     const label=document.createElement('div');label.className='theme-name';label.textContent=t.name;
     wrap.appendChild(chip);wrap.appendChild(label);tg.appendChild(wrap);
   });
-  // Patterns
   const pg=document.getElementById('patternGrid');pg.innerHTML='';
   const accentColor=THEMES[currentTheme].accent;
   PATTERNS.forEach((p,i)=>{
     const wrap=document.createElement('div');wrap.className='pattern-item';
-    const chip=document.createElement('div');
-    chip.className='pattern-chip'+(i===currentPattern?' selected':'');
+    const chip=document.createElement('div');chip.className='pattern-chip'+(i===currentPattern?' selected':'');
     chip.title=p.name;
-    const img=document.createElement('img');
-    img.src=buildPatternPreview(p,accentColor);
-    img.style.cssText='width:100%;height:100%;border-radius:11px;display:block;';
-    chip.appendChild(img);
-    chip.onclick=()=>{applyPattern(i);renderSettings();};
+    const img=document.createElement('img');img.src=buildPatternPreview(p,accentColor);img.style.cssText='width:100%;height:100%;border-radius:11px;display:block;';
+    chip.appendChild(img);chip.onclick=()=>{applyPattern(i);renderSettings();};
     const label=document.createElement('div');label.className='pattern-name';label.textContent=p.name;
     wrap.appendChild(chip);wrap.appendChild(label);pg.appendChild(wrap);
   });
-  // Categories
   const el=document.getElementById('catManage');el.innerHTML='';
   categories.forEach(cat=>{
     const d=document.createElement('div');d.className='cat-row';
@@ -464,11 +546,14 @@ function saveCategory(){
   categories.push({id:nextId++,name,color:selectedColor,elapsed:0});
   closeModal();save();render();
 }
+
 function switchPage(page){
-  document.getElementById('pageHome').classList.toggle('active',page==='home');
-  document.getElementById('pageSettings').classList.toggle('active',page==='settings');
-  document.getElementById('tabHome').classList.toggle('active',page==='home');
-  document.getElementById('tabSettings').classList.toggle('active',page==='settings');
+  ['home','history','settings'].forEach(p=>{
+    document.getElementById('page'+p.charAt(0).toUpperCase()+p.slice(1)).classList.toggle('active',p===page);
+    const btn=document.getElementById('tab'+p.charAt(0).toUpperCase()+p.slice(1));
+    if(btn)btn.classList.toggle('active',p===page);
+  });
+  if(page==='history')renderHistory();
   if(page==='settings')renderSettings();
 }
 function save(){try{localStorage.setItem('tt2_cats',JSON.stringify(categories));localStorage.setItem('tt2_nid',nextId);}catch(e){}}
@@ -479,16 +564,22 @@ function load(){
     const n=localStorage.getItem('tt2_nid');if(n)nextId=parseInt(n);
     const t=localStorage.getItem('tt2_theme');if(t!==null)currentTheme=parseInt(t);
     const p=localStorage.getItem('tt2_pattern');if(p!==null)currentPattern=parseInt(p);
+    const h=localStorage.getItem('tt2_history');if(h)history=JSON.parse(h);
   }catch(e){}
 }
 const now=new Date();
 document.getElementById('dateLabel').textContent=now.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
 load();applyTheme(currentTheme);applyPattern(currentPattern);render();
+
+// Auto-save to history at midnight
+function checkMidnight(){
+  const key=todayKey();
+  const lastKey=localStorage.getItem('tt2_lastday')||'';
+  if(lastKey && lastKey!==key){saveToHistory();categories.forEach(c=>c.elapsed=0);save();}
+  localStorage.setItem('tt2_lastday',key);
+}
+checkMidnight();
+setInterval(checkMidnight,60000);
 </script>
 </body>
-</html>"""
-
-with open('/mnt/user-data/outputs/index.html','w') as f:
-    f.write(html)
-print("done", len(html))
-PYEOF
+</html>
