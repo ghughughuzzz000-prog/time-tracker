@@ -1,6 +1,5 @@
-
-
-<!DOCTYPE html>
+python3 << 'PYEOF'
+html = r"""<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -12,10 +11,11 @@
   <title>時間トラッカー</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#f5eff0;--pink:#e8527a;--card-bg:#fff;--text:#2d1f25;--text-sub:#a08090;--radius:28px;--tab-h:80px; }
+    :root{--bg:#f5eff0;--pink:#e8527a;--card-bg:#fff;--text:#2d1f25;--text-sub:#a08090;--radius:28px;--tab-h:80px;}
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;max-width:430px;margin:0 auto;overflow-x:hidden;}
-    .page{display:none;flex-direction:column;min-height:100dvh;padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;max-width:430px;margin:0 auto;overflow-x:hidden;position:relative;}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:var(--pattern-opacity,0);background-image:var(--pattern-img,none);background-size:var(--pattern-size,40px 40px);}
+    .page{display:none;flex-direction:column;min-height:100dvh;padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));position:relative;z-index:1;}
     .page.active{display:flex;}
     .top-bar{padding:16px 24px 12px;padding-top:calc(16px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;}
     .top-title{font-size:22px;font-weight:800;}
@@ -36,8 +36,8 @@
     .pill-time{font-size:12px;font-weight:600;color:var(--text-sub);}
     .timer-card{margin:0 20px 16px;background:var(--card-bg);border-radius:var(--radius);padding:20px 24px;box-shadow:0 4px 20px rgba(0,0,0,.07);}
     .timer-who{font-size:13px;font-weight:700;color:var(--text-sub);margin-bottom:4px;display:flex;align-items:center;gap:6px;min-height:20px;}
-    .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--pink);animation:pulse 1s ease-in-out infinite;display:none;flex-shrink:0;}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
+    .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--pink);animation:blink 1s ease-in-out infinite;display:none;flex-shrink:0;}
+    @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
     .timer-num{font-size:46px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-1px;margin-bottom:16px;}
     .timer-btns{display:flex;gap:10px;}
     .btn-main{flex:1;background:var(--pink);color:#fff;border:none;border-radius:50px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .3s,transform .1s;}
@@ -65,11 +65,20 @@
     .settings-block{margin:0 20px 16px;background:var(--card-bg);border-radius:20px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
     .settings-block-title{font-size:13px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
     .theme-grid{display:flex;gap:10px;flex-wrap:wrap;}
-    .theme-chip{width:42px;height:42px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s,transform .12s;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:transparent;}
+    .theme-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .theme-chip{width:42px;height:42px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s,transform .12s;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:transparent;overflow:hidden;}
     .theme-chip:active{transform:scale(.88);}
     .theme-chip.selected{border-color:var(--text);color:#fff;}
-    .theme-name{font-size:11px;font-weight:700;color:var(--text-sub);text-align:center;margin-top:4px;}
-    .theme-item{display:flex;flex-direction:column;align-items:center;}
+    .theme-name{font-size:10px;font-weight:700;color:var(--text-sub);text-align:center;}
+    /* Pattern chips */
+    .pattern-grid{display:flex;gap:10px;flex-wrap:wrap;}
+    .pattern-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .pattern-chip{width:52px;height:52px;border-radius:14px;cursor:pointer;border:3px solid transparent;transition:border-color .15s,transform .12s;overflow:hidden;position:relative;}
+    .pattern-chip:active{transform:scale(.88);}
+    .pattern-chip.selected{border-color:var(--pink);}
+    .pattern-chip::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:transparent;text-shadow:0 1px 3px rgba(0,0,0,.3);}
+    .pattern-chip.selected::after{color:var(--pink);}
+    .pattern-name{font-size:10px;font-weight:700;color:var(--text-sub);text-align:center;}
     .cat-manage-list{display:flex;flex-direction:column;gap:8px;}
     .cat-row{background:var(--bg);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;}
     .cat-row-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0;}
@@ -134,6 +143,10 @@
     <div class="theme-grid" id="themeGrid"></div>
   </div>
   <div class="settings-block">
+    <div class="settings-block-title">背景の柄</div>
+    <div class="pattern-grid" id="patternGrid"></div>
+  </div>
+  <div class="settings-block">
     <div class="settings-block-title">カテゴリ</div>
     <div class="cat-manage-list" id="catManage"></div>
   </div>
@@ -169,6 +182,7 @@
 
 <script>
 const CAT_COLORS=['#e8527a','#a3b8e0','#c5a8d4','#8abfaa','#f0b86a','#e88a72','#7fc8d4','#d4a0c0','#b5d68a','#f0a0b0'];
+
 const THEMES=[
   {name:'ピンク',   accent:'#e8527a',bg:'#f5eff0',sub:'#a08090',track:'#ead5db'},
   {name:'ブルー',   accent:'#3b82f6',bg:'#eff4fb',sub:'#7090b0',track:'#c5d8f5'},
@@ -182,13 +196,41 @@ const THEMES=[
   {name:'ローズ',   accent:'#f43f8e',bg:'#fef0f6',sub:'#a06080',track:'#f9c8e2'},
 ];
 
+// Each pattern: { name, label(emoji preview), opacity, img(CSS background-image), size }
+const PATTERNS=[
+  {name:'なし',     label:'—',   opacity:0,    img:'none',    size:'40px 40px'},
+  {name:'ドット',   label:'⚬⚬',  opacity:0.55, size:'24px 24px',
+   img:`radial-gradient(circle, currentColor 1.5px, transparent 1.5px)`},
+  {name:'大ドット', label:'●●',  opacity:0.35, size:'36px 36px',
+   img:`radial-gradient(circle, currentColor 3px, transparent 3px)`},
+  {name:'星',       label:'★',   opacity:0.45, size:'32px 32px',
+   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-size='16' fill='%23000'%3E%E2%98%85%3C/text%3E%3C/svg%3E")`},
+  {name:'ハート',   label:'♥',   opacity:0.45, size:'32px 32px',
+   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-size='16' fill='%23000'%3E%E2%99%A5%3C/text%3E%3C/svg%3E")`},
+  {name:'チェック', label:'☑',   opacity:0.4,  size:'28px 28px',
+   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect x='6' y='6' width='16' height='16' rx='3' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
+  {name:'ストライプ',label:'≡',  opacity:0.25, size:'20px 20px',
+   img:`repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 0, transparent 50%)`},
+  {name:'グリッド', label:'#',   opacity:0.2,  size:'24px 24px',
+   img:`linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)`},
+  {name:'波',       label:'〜',  opacity:0.3,  size:'40px 20px',
+   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cpath d='M0 10 Q10 0 20 10 Q30 20 40 10' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
+  {name:'花',       label:'✿',  opacity:0.4,  size:'36px 36px',
+   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Ctext x='6' y='26' font-size='20' fill='%23000'%3E%E2%9C%BF%3C/text%3E%3C/svg%3E")`},
+  {name:'三角',     label:'▲',  opacity:0.35, size:'30px 30px',
+   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Cpolygon points='15,4 28,26 2,26' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")`},
+  {name:'ダイヤ',   label:'◇',  opacity:0.35, size:'28px 28px',
+   img:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect x='5' y='5' width='18' height='18' rx='1' fill='none' stroke='%23000' stroke-width='1.5' transform='rotate(45 14 14)'/%3E%3C/svg%3E")`},
+];
+
 let categories=[
   {id:1,name:'数学',color:'#e8527a',elapsed:0},
   {id:2,name:'英語',color:'#a3b8e0',elapsed:0},
   {id:3,name:'理科',color:'#c5a8d4',elapsed:0},
   {id:4,name:'社会',color:'#8abfaa',elapsed:0},
 ];
-let nextId=5,selected=null,running=false,startTs=null,intervalId=null,currentElapsed=0,selectedColor=CAT_COLORS[0],currentTheme=0;
+let nextId=5,selected=null,running=false,startTs=null,intervalId=null,currentElapsed=0,selectedColor=CAT_COLORS[0];
+let currentTheme=0, currentPattern=0;
 
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
 function fmtShort(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return h>0?`${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`:`${m}:${String(sec).padStart(2,'0')}`;}
@@ -198,12 +240,69 @@ function getCatElapsed(cat){return cat.elapsed+(running&&cat.id===selected?curre
 function applyTheme(idx){
   currentTheme=idx;
   const t=THEMES[idx];
-  document.documentElement.style.setProperty('--pink',t.accent);
-  document.documentElement.style.setProperty('--bg',t.bg);
-  document.documentElement.style.setProperty('--text-sub',t.sub);
+  const r=document.documentElement;
+  r.style.setProperty('--pink',t.accent);
+  r.style.setProperty('--bg',t.bg);
+  r.style.setProperty('--text-sub',t.sub);
   document.getElementById('metaTheme').setAttribute('content',t.bg);
   document.getElementById('tabAddIcon').setAttribute('stroke',t.accent);
-  saveTheme();
+  savePrefs();
+}
+
+function applyPattern(idx){
+  currentPattern=idx;
+  const p=PATTERNS[idx];
+  const r=document.documentElement;
+  r.style.setProperty('--pattern-opacity', p.opacity);
+  r.style.setProperty('--pattern-img', p.img);
+  r.style.setProperty('--pattern-size', p.size);
+  // Use accent color for SVG-less patterns (dot/stripe/grid)
+  const accent=THEMES[currentTheme].accent+'40';
+  r.style.setProperty('color', accent); // used by currentColor in CSS patterns
+  savePrefs();
+}
+
+// Build a small preview canvas for the pattern chip
+function buildPatternPreview(p, accentColor){
+  const c=document.createElement('canvas');c.width=52;c.height=52;
+  const ctx=c.getContext('2d');
+  const bg=THEMES[currentTheme].bg;
+  ctx.fillStyle=bg;ctx.fillRect(0,0,52,52);
+  ctx.fillStyle=accentColor+'70';
+  ctx.strokeStyle=accentColor+'70';ctx.lineWidth=1.5;
+  if(p.name==='なし'){
+    ctx.font='22px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle=THEMES[currentTheme].sub;ctx.fillText('—',26,28);
+  } else if(p.name==='ドット'){
+    for(let x=8;x<52;x+=16)for(let y=8;y<52;y+=16){ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fill();}
+  } else if(p.name==='大ドット'){
+    for(let x=12;x<52;x+=24)for(let y=12;y<52;y+=24){ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();}
+  } else if(p.name==='星'){
+    ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('★',26,28);
+    ctx.font='11px serif';ctx.fillText('★',10,14);ctx.fillText('★',42,42);
+  } else if(p.name==='ハート'){
+    ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('♥',26,28);
+    ctx.font='11px serif';ctx.fillText('♥',10,14);ctx.fillText('♥',42,42);
+  } else if(p.name==='チェック'){
+    for(let x=4;x<52;x+=18)for(let y=4;y<52;y+=18){ctx.strokeRect(x,y,12,12);}
+  } else if(p.name==='ストライプ'){
+    for(let i=-52;i<104;i+=10){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+52,52);ctx.stroke();}
+  } else if(p.name==='グリッド'){
+    for(let x=0;x<52;x+=12){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,52);ctx.stroke();}
+    for(let y=0;y<52;y+=12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(52,y);ctx.stroke();}
+  } else if(p.name==='波'){
+    for(let row=8;row<52;row+=16){ctx.beginPath();for(let x=0;x<=52;x+=2){ctx.lineTo(x,row+Math.sin(x/6)*4);}ctx.stroke();}
+  } else if(p.name==='花'){
+    ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('✿',26,28);
+    ctx.font='12px serif';ctx.fillText('✿',9,12);ctx.fillText('✿',43,44);
+  } else if(p.name==='三角'){
+    const tri=(x,y,s)=>{ctx.beginPath();ctx.moveTo(x,y-s);ctx.lineTo(x+s*.87,y+s*.5);ctx.lineTo(x-s*.87,y+s*.5);ctx.closePath();ctx.stroke();};
+    tri(26,22,13);tri(10,44,7);tri(44,44,7);
+  } else if(p.name==='ダイヤ'){
+    const dia=(x,y,s)=>{ctx.beginPath();ctx.moveTo(x,y-s);ctx.lineTo(x+s,y);ctx.lineTo(x,y+s);ctx.lineTo(x-s,y);ctx.closePath();ctx.stroke();};
+    dia(26,24,11);dia(8,44,6);dia(44,44,6);
+  }
+  return c.toDataURL();
 }
 
 function selectCat(id){
@@ -265,7 +364,7 @@ function resetCurrent(){
   document.getElementById('pulseDot').style.display='none';
 }
 
-function render(){renderDonut();renderPills();renderBars();renderSettings();}
+function render(){renderDonut();renderPills();renderBars();}
 function renderDonut(){
   const svg=document.getElementById('donutSvg');
   const cx=115,cy=115,r=95,stroke=22,circ=2*Math.PI*r;
@@ -313,6 +412,7 @@ function renderBars(){
   document.getElementById('totalVal').textContent=fmt(totalAll());
 }
 function renderSettings(){
+  // Theme
   const tg=document.getElementById('themeGrid');tg.innerHTML='';
   THEMES.forEach((t,i)=>{
     const wrap=document.createElement('div');wrap.className='theme-item';
@@ -323,6 +423,23 @@ function renderSettings(){
     const label=document.createElement('div');label.className='theme-name';label.textContent=t.name;
     wrap.appendChild(chip);wrap.appendChild(label);tg.appendChild(wrap);
   });
+  // Patterns
+  const pg=document.getElementById('patternGrid');pg.innerHTML='';
+  const accentColor=THEMES[currentTheme].accent;
+  PATTERNS.forEach((p,i)=>{
+    const wrap=document.createElement('div');wrap.className='pattern-item';
+    const chip=document.createElement('div');
+    chip.className='pattern-chip'+(i===currentPattern?' selected':'');
+    chip.title=p.name;
+    const img=document.createElement('img');
+    img.src=buildPatternPreview(p,accentColor);
+    img.style.cssText='width:100%;height:100%;border-radius:11px;display:block;';
+    chip.appendChild(img);
+    chip.onclick=()=>{applyPattern(i);renderSettings();};
+    const label=document.createElement('div');label.className='pattern-name';label.textContent=p.name;
+    wrap.appendChild(chip);wrap.appendChild(label);pg.appendChild(wrap);
+  });
+  // Categories
   const el=document.getElementById('catManage');el.innerHTML='';
   categories.forEach(cat=>{
     const d=document.createElement('div');d.className='cat-row';
@@ -355,17 +472,23 @@ function switchPage(page){
   if(page==='settings')renderSettings();
 }
 function save(){try{localStorage.setItem('tt2_cats',JSON.stringify(categories));localStorage.setItem('tt2_nid',nextId);}catch(e){}}
-function saveTheme(){try{localStorage.setItem('tt2_theme',currentTheme);}catch(e){}}
+function savePrefs(){try{localStorage.setItem('tt2_theme',currentTheme);localStorage.setItem('tt2_pattern',currentPattern);}catch(e){}}
 function load(){
   try{
     const d=localStorage.getItem('tt2_cats');if(d)categories=JSON.parse(d);
     const n=localStorage.getItem('tt2_nid');if(n)nextId=parseInt(n);
     const t=localStorage.getItem('tt2_theme');if(t!==null)currentTheme=parseInt(t);
+    const p=localStorage.getItem('tt2_pattern');if(p!==null)currentPattern=parseInt(p);
   }catch(e){}
 }
 const now=new Date();
 document.getElementById('dateLabel').textContent=now.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
-load();applyTheme(currentTheme);render();
+load();applyTheme(currentTheme);applyPattern(currentPattern);render();
 </script>
 </body>
-</html>
+</html>"""
+
+with open('/mnt/user-data/outputs/index.html','w') as f:
+    f.write(html)
+print("done", len(html))
+PYEOF
